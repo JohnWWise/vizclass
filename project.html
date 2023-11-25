@@ -5,35 +5,39 @@
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <style>
         .text {
-    font-family: Arial;
-    font-size: 15px;
-}
+            font-family: Arial;
+            font-size: 15px;
+        }
 
-.axis path, .axis line {
-    fill: none;
-    stroke: black;
-    shape-rendering: crispEdges;
-}
+        .axis path, .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
 
-.tick text {
-    fill: black;
-    font-size: 11px;
-}
+        .tick text {
+            fill: black;
+            font-size: 11px;
+        }
 
-path {
-    fill: none;
-}
+        path {
+            fill: none;
+        }
 
-.line {
-    stroke-width: 5; /* Adjust the thickness as needed */
-}
+        .line {
+            stroke-width: 5; /* Adjust the thickness as needed */
+        }
 
+        .gridline {
+            stroke: #ccc;
+            stroke-opacity: 0.2;
+        }
     </style>
 </head>
 <body>
 
 <svg id="main" width="1200" height="600">
-    <text id='label' x='20' y='20'>Crime Categories</text>
+    <text id='label' x='20' y='20'>Title of this very cool plot</text>
     <g transform="translate(70,40)"></g>
 </svg>
 
@@ -41,6 +45,7 @@ path {
     var CHART_WIDTH = 750;
     var CHART_HEIGHT = 500;
     var g;
+
     // Load data from CSV
     d3.csv('pros_across_times.csv', function(error, data) {
         if (error) throw error;
@@ -69,7 +74,7 @@ path {
                 })])
                 .range([CHART_HEIGHT, 0]);
 
-            var color = d3.scale.category10()
+            var color = d3.scale.category20()
                 .domain(commitData.map(function(d) { return d["Crime Category"]; }));
 
             var line = d3.svg.line()
@@ -81,7 +86,18 @@ path {
                 });
 
             g = d3.select("svg").select("g");
-            
+
+            // Draw gridlines
+            g.selectAll(".gridline")
+                .data(yScale.ticks(10))
+                .enter().append("line")
+                .attr("class", "gridline")
+                .attr("x1", 0)
+                .attr("x2", CHART_WIDTH)
+                .attr("y1", function(d) { return yScale(d); })
+                .attr("y2", function(d) { return yScale(d); })
+                .style("opacity", 1);
+
             commitData.forEach(function (crime) {
                 crime.Points = [
                     crime["First Commit."],
@@ -92,16 +108,19 @@ path {
                     crime["Sixth+ Commit."]
                 ];
 
+                // Append a group for each crime category
+                var crimeGroup = g.append("g")
+                    .attr("class", "crime-group")
+                    .style("opacity", 1);
+
                 // Draw line
-                var linePath = g.append("path")
+                crimeGroup.append("path")
                     .data([crime])
                     .attr("class", "line")
                     .attr("d", line(crime.Points))
                     .style("stroke", color(crime["Crime Category"]))
                     .style("opacity", 0.75);
             });
-
-            
 
             var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(function (e) {
                 return "Commit " + e;
@@ -111,7 +130,7 @@ path {
 
             g.append("g").attr("class", "axis").attr("transform", "translate(0," + CHART_HEIGHT + ")").call(xAxis);
             g.append("g").attr("class", "axis").call(yAxis);
-            
+
             // Add legend after drawing the chart
             var legend = d3.select("svg")
                 .append("g")
@@ -143,24 +162,48 @@ path {
         }
 
         function handleLegendMouseover(d) {
-    // Introduce a delay before changing the opacity
-    setTimeout(function() {
-        // Dim all lines except the one corresponding to the legend item
-        g.selectAll(".line")
-            .style("opacity", function(lineData) {
-                console.log("Line data:", lineData);
-                return lineData["Crime Category"] === d ? 1 : 0;
-            });
-    }, 450); // Adjust the delay time (in milliseconds) as needed
-}
+            // Select all gridlines, and smoothly adjust the opacity
+            g.selectAll(".gridline")
+                .transition()  // Add transition for smooth effect
+                .duration(400)  // Duration of the transition in milliseconds
+                .style("opacity", 1);
 
+            // Select all lines, and smoothly adjust the opacity
+            g.selectAll(".line, .point-label")
+                .transition()  // Add transition for smooth effect
+                .duration(400)  // Duration of the transition in milliseconds
+                .style("opacity", function (data) {
+                    return data["Crime Category"] === d ? 1 : 0.01;
+                })
+                .filter(function (data) {
+                    return data["Crime Category"] === d;
+                })
+                .transition()
+                .duration(400)
+                .style("opacity", 1);
 
-        function handleLegendMouseout(d) {
-    // Dim all lines except the one corresponding to the legend item
-    g.selectAll(".line")
-        .style("opacity", 1);
-}
+            g.selectAll(".point-label")
+                .filter(function (data) {
+                    return data["Crime Category"] !== d;
+                })
+                .transition()
+                .duration(400)
+                .style("opacity", 0.2);
+        }
 
+        function handleLegendMouseout() {
+            // Select all gridlines, and smoothly adjust the opacity back to 0
+            g.selectAll(".gridline")
+                .transition()  // Add transition for smooth effect
+                .duration(400)  // Duration of the transition in milliseconds
+                .style("opacity", 0);
+
+            // Select all lines and text labels, and smoothly adjust the opacity back to 1
+            g.selectAll(".line")
+                .transition()  // Add transition for smooth effect
+                .duration(400)  // Duration of the transition in milliseconds
+                .style("opacity", 1);
+        }
 
         drawLineChart();
     });

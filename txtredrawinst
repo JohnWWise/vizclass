@@ -1,0 +1,37 @@
+1. **Define a Function for Data Loading and Redrawing:**
+   - Create a function that takes a file name or data as a parameter, loads the data, and redraws the entire visualization using the new data.
+
+2. **Modify Legend Click Behavior:**
+   - Change the legend click behavior to call this function with the appropriate file name or data for the selected legend item.
+
+Here's a simplified example to illustrate the concept:
+
+```javascript
+// Function to load data and redraw the chart
+function updateChart(data) {
+    // Clear existing chart
+    d3.select("svg").selectAll("*").remove();
+
+    // Redraw the chart using the new data
+    // ... (include your chart drawing logic here with the new data)
+}
+
+// Modify legend click behavior
+legendItems
+    .on("mouseover", handleLegendMouseover)
+    .on("mouseout", handleLegendMouseout)
+    .on("click", function(d) {
+        // Load and update chart with new data based on the legend item clicked
+        var newCSVFileName = determineNewCSVFileName(d); // Implement this function
+        d3.csv(newCSVFileName, function(error, newData) {
+            if (error) throw error;
+            updateChart(newData);
+        });
+    });
+```
+
+In this example, the `updateChart` function is responsible for clearing the existing chart and redrawing it with new data. The legend click behavior triggers the loading of new data based on the selected legend item and then calls `updateChart` with the new data.
+
+You'll need to implement the `determineNewCSVFileName` function, which should return the appropriate CSV file name based on the legend item clicked. Adjust the function based on your specific needs.
+
+This approach allows for a dynamic update of the visualization based on user interaction with the legend. Feel free to adapt it according to the structure and requirements of your project.

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Categories - Commit Duration</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <style>
+        .text {
+    font-family: Arial;
+    font-size: 15px;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.tick text {
+    fill: black;
+    font-size: 11px;
+}
+
+path {
+    fill: none;
+}
+
+.line {
+    stroke-width: 5; /* Adjust the thickness as needed */
+}
+
+    </style>
+</head>
+<body>
+
+<svg id="main" width="1200" height="600">
+    <text id='label' x='20' y='20'>Crime Categories</text>
+    <g transform="translate(70,40)"></g>
+</svg>
+
+<script>
+    var CHART_WIDTH = 750;
+    var CHART_HEIGHT = 500;
+    var g;
+    // Load data from CSV
+    d3.csv('pros_across_times.csv', function(error, data) {
+        if (error) throw error;
+
+        // Define your accessor function for the commitData
+        var commitData = data.map(function(d) {
+            return {
+                "Crime Category": d["Crime Category"],
+                "First Commit.": +d["First Commit."],
+                "Second Commit.": +d["Second Commit."],
+                "Third Commit.": +d["Third Commit."],
+                "Fourth Commit.": +d["Fourth Commit."],
+                "Fifth Commit.": +d["Fifth Commit."],
+                "Sixth+ Commit.": +d["Sixth+ Commit."]
+            };
+        });
+
+        function drawLineChart() {
+            var xScale = d3.scale.ordinal()
+                .domain(d3.range(1, 7))
+                .rangePoints([0, CHART_WIDTH]);
+
+            var yScale = d3.scale.linear()
+                .domain([0, d3.max(commitData, function (d) {
+                    return d3.max([d["First Commit."], d["Second Commit."], d["Third Commit."], d["Fourth Commit."], d["Fifth Commit."], d["Sixth+ Commit."]]);
+                })])
+                .range([CHART_HEIGHT, 0]);
+
+            var color = d3.scale.category10()
+                .domain(commitData.map(function(d) { return d["Crime Category"]; }));
+
+            var line = d3.svg.line()
+                .x(function (d, i) {
+                    return xScale(i + 1);
+                })
+                .y(function (d) {
+                    return yScale(d);
+                });
+
+            g = d3.select("svg").select("g");
+            
+            commitData.forEach(function (crime) {
+                crime.Points = [
+                    crime["First Commit."],
+                    crime["Second Commit."],
+                    crime["Third Commit."],
+                    crime["Fourth Commit."],
+                    crime["Fifth Commit."],
+                    crime["Sixth+ Commit."]
+                ];
+
+                // Draw line
+                var linePath = g.append("path")
+                    .data([crime])
+                    .attr("class", "line")
+                    .attr("d", line(crime.Points))
+                    .style("stroke", color(crime["Crime Category"]))
+                    .style("opacity", 0.75);
+            });
+
+            
+
+            var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(function (e) {
+                return "Commit " + e;
+            });
+
+            var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+            g.append("g").attr("class", "axis").attr("transform", "translate(0," + CHART_HEIGHT + ")").call(xAxis);
+            g.append("g").attr("class", "axis").call(yAxis);
+            
+            // Add legend after drawing the chart
+            var legend = d3.select("svg")
+                .append("g")
+                .attr("class", "legend")
+                .attr("transform", "translate(20,50)");
+
+            var legendItems = legend.selectAll(".legend-item")
+                .data(commitData.map(function(d) { return d["Crime Category"]; }))
+                .enter().append("g")
+                .attr("class", "legend-item")
+                .attr("transform", function(d, i) { return "translate(820," + i * 20 + ")"; });
+
+            legendItems.append("rect")
+                .attr("x", 0)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", function(d) { return color(d); });
+
+            legendItems.append("text")
+                .attr("x", 25)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "start")
+                .text(function(d) { return d; });
+
+            legendItems
+                .on("mouseover", handleLegendMouseover)
+                .on("mouseout", handleLegendMouseout);
+        }
+
+        function handleLegendMouseover(d) {
+    // Introduce a delay before changing the opacity
+    setTimeout(function() {
+        // Dim all lines except the one corresponding to the legend item
+        g.selectAll(".line")
+            .style("opacity", function(lineData) {
+                console.log("Line data:", lineData);
+                return lineData["Crime Category"] === d ? 1 : 0;
+            });
+    }, 450); // Adjust the delay time (in milliseconds) as needed
+}
+
+
+        function handleLegendMouseout(d) {
+    // Dim all lines except the one corresponding to the legend item
+    g.selectAll(".line")
+        .style("opacity", 1);
+}
+
+
+        drawLineChart();
+    });
+</script>
+</body>
+</html>

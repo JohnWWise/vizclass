@@ -1,79 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>JW's D3 Sandbox</title>
-		<script src="https://d3js.org/d3.v7.min.js"></script>
-		<style>
-		</style>
-	</head>
-	<body>
-	  <p>Click on this text to update the chart with new data values (once).</p>
-		<script>
+<html>
+<head>
+	<title>Project 1 - sample code 2</title>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<style>
+    	text { 
+			font-family: Arial; 
+			font-size: 15px;
+		}
+		.axis path, .axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		.tick text {
+			fill: black;
+			font-size: 11px;
+		}
 
-			// Width and height
-			var w = 600;
-			var h = 250;
-			var barPadding = 1;
+		rect {
+			stroke: white;
+		}
+	</style>
+</head>
+<body>
 
-			var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-						   11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
+	<svg id="main" width="600" height="600">
+		<text id='label' x='20' y='20'>Energy prodcution for the US</text>
+		<g transform="translate(30,40)"></g>
+	</svg>
 
-			var xScale = d3.scaleBand()
-			    .domain(d3.range(dataset.length))
-			    .range([0, w])
-			    .padding(0.05);
+	
+	<script>
 
-			var yScale = d3.scaleLinear()
-							.domain([0, d3.max(dataset)])
-							.range([0, h]);
+		
 
-			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
+		var CHART_WIDTH = 400;
+		var CHART_HEIGHT = 130;
 
-			svg.selectAll("rect")
-			   .data(dataset)
-			   .enter()
-			   .append("rect")
-			   .attr("x", function(d, i) {
-			   		return xScale(i);
-			   })
-			   .attr("y", function(d) {
-			   		return h - yScale(d);
-			   })
-			   .attr("width", xScale.bandwidth())
-			   .attr("height", function(d) {
-			   		return yScale(d);
-			   })
-			   .attr("fill", function(d) {
-					return "rgb(0, 0, " + Math.round(d * 10) + ")";
-			   });
+		var MAX_BAR_HEIGHT = 100;
 
-			svg.selectAll("text")
-   .data(dataset)
-   .enter()
-   .append("text")
-   .text(function(d) {
-       return d;
-   })
-   .attr("text-anchor", "middle")
-   .attr("x", function(d, i) {
-       return xScale(i) + xScale.bandwidth() / 2;  // Adjusted for band scale
-   })
-   .attr("y", function(d) {
-       return h - yScale(d) + 14;  // Adjusted for bar height and padding
-   })
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "11px")
-   .attr("fill", "white");
+		var energyProduction = [];
 
-d3.select("p")
-.on("click", function() {
-            alert("Hey, don't click that!");
-});
+		function drawLineChart() 
+		{
+			var maxValue=d3.max(energyProduction),xScale=d3.scale.linear(),yScale=d3.scale.linear();xScale.domain([1980,2012]).range([0,CHART_WIDTH]),yScale.domain([0,100]).range([CHART_HEIGHT,0]);
+			
+			
+			var pathGenerator=d3.svg.line().x(function(e){return xScale(e.year)}).y(function(e){return yScale(e.production)}),g=d3.select("svg").select("g"),xAxis=d3.svg.axis().scale(xScale).orient("bottom").tickFormat(function(e){return""+e}),yAxis=d3.svg.axis().scale(yScale).orient("left");g.append("g").attr("class","axis").attr("transform","translate(0,"+CHART_HEIGHT+")").call(xAxis),g.append("g").attr("class","axis").call(yAxis),g.append("path").style("fill","none").style("stroke","steelblue").style("stroke-width","3px").attr("d",pathGenerator(energyProduction));
 
-		</script>
-	</body>
+		}
+			
+
+		d3.csv('energy_us.csv', function(data) 
+		{
+			for (var i=0; i<data.length; i++)
+			{
+				var record = data[i];
+				
+				// loop through all years, from 1980 to 2012
+				for (var y=1980; y<=2012; y++) 
+				{
+					var value = record[y];
+					var object = {
+						year: y,
+						production: +value
+					};
+
+					energyProduction.push(object);
+				}
+			}
+			drawLineChart();
+
+		});
+		
+		
+	</script>
+</body>
+
+
 </html>

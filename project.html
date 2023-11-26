@@ -164,44 +164,6 @@ g.selectAll(".gridline")
                 .on("click", handleLegendClick);
         }
 
-function drawSubPlot(crimeType, subData) {
-    var CHART_WIDTH = 750;
-    var CHART_HEIGHT = 500;
-    var g;
-
-    d3.select("svg").selectAll("*").remove();
-
-    // Recreate the necessary SVG elements
-    g = d3.select("svg").append("g").attr("transform", "translate(70,40)");
-
-    // Redraw the gridlines
-    g.selectAll(".gridline")
-        .data(yScale.ticks(10))
-        .enter().append("line")
-        .attr("class", "gridline")
-        .attr("x1", 0)
-        .attr("x2", CHART_WIDTH)
-        .attr("y1", function(d) { return yScale(d); })
-        .attr("y2", function(d) { return yScale(d); })
-        .style("stroke", "rgba(0, 0, 0, 0.2)")
-        .style("stroke-width", 2);
-
-    subData.forEach(function (crime) {
-        if (crime["Crime Category"] === crimeType) {
-            var crimeGroup = g.append("g")
-                .attr("class", "crime-group")
-                .style("opacity", 1);
-
-            crimeGroup.append("path")
-                .data([crime])
-                .attr("class", "line")
-                .attr("d", line(crime.Points))
-                .style("stroke", color(crime["Crime Category"]))
-                .style("opacity", 0.75);
-        }
-    });
-}
-
 
         function handleLegendMouseover(d) {
             // Select all gridlines, and smoothly adjust the opacity
@@ -248,8 +210,8 @@ function drawSubPlot(crimeType, subData) {
         }
 
 function handleLegendClick(d) {
+    // Assuming you have CSV files in the same format as the original data
     var fileName = getFileNameForCrimeType(d);
-    alert("Selected crime type: " + d + "\nCSV file name: " + fileName);
 
     // Remove all elements from the SVG
     d3.select("svg").selectAll("*").remove();
@@ -257,20 +219,110 @@ function handleLegendClick(d) {
     // Recreate the necessary SVG elements
     var g = d3.select("svg").append("g").attr("transform", "translate(70,40)");
 
-    // Load data from CSV and redraw the plot
-    d3.csv(fileName, function(error, data) {
+    // Load data from CSV for the filtered crime type
+    d3.csv(fileName, function (error, filteredData) {
         if (error) throw error;
 
-        // ... (rest of your code for drawing the plot)
+        var commitData = filteredData.map(function (d) {
+            return {
+                "crime": d["crime"],
+                "First Commit.": +d["First Commit."],
+                "Second Commit.": +d["Second Commit."],
+                "Third Commit.": +d["Third Commit."],
+                "Fourth Commit.": +d["Fourth Commit."],
+                "Fifth Commit.": +d["Fifth Commit."],
+                "Sixth+ Commit.": +d["Sixth+ Commit."]
+            };
+        });
 
-        // Use the 'g' element for appending elements
-        var crimeGroup = g.append("g")
-            .attr("class", "crime-group")
-            .style("opacity", 1);
 
-        // ... (rest of your code for drawing the lines)
+        var xScale = d3.scale.ordinal()
+            .domain(d3.range(1, 7))
+            .rangePoints([0, CHART_WIDTH]);
+
+        var yScale = d3.scale.linear()
+            .domain([0, d3.max(filteredData, function (d) {
+                return d3.max([d["First Commit."], d["Second Commit."], d["Third Commit."], d["Fourth Commit."], d["Fifth Commit."], d["Sixth+ Commit."]]);
+            })])
+            .range([CHART_HEIGHT, 0]);
+
+        var color = d3.scale.category20()
+            .domain(commitData.map(function (d) { return d["crime"]; }));
+
+        var line = d3.svg.line()
+            .x(function (d, i) {
+                return xScale(i + 1);
+            })
+            .y(function (d) {
+                return yScale(d);
+            });
+
+        g = d3.select("svg").select("g");
+
+        // Rest of the code...
+
+        commitData.forEach(function (crime) {
+            crime.Points = [
+                crime["First Commit."],
+                crime["Second Commit."],
+                crime["Third Commit."],
+                crime["Fourth Commit."],
+                crime["Fifth Commit."],
+                crime["Sixth+ Commit."]
+            ];
+
+            var crimeGroup = g.append("g")
+                .attr("class", "crime-group")
+                .style("opacity", 1);
+
+            crimeGroup.append("path")
+                .data([crime])
+                .attr("class", "line")
+                .attr("d", line(crime.Points))
+                .style("stroke", color(crime["crime"]))
+                .style("opacity", 0.75);
+        });
+
+        var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickFormat(function (e) {
+            return "Commit " + e;
+        });
+
+        var yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+        g.append("g").attr("class", "axis").attr("transform", "translate(0," + CHART_HEIGHT + ")").call(xAxis);
+        g.append("g").attr("class", "axis").call(yAxis);
+        
+        var legend = d3.select("svg")
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", "translate(" + (CHART_WIDTH + 40) + ",50)");
+        
+        var legendItems = legend.selectAll(".legend-item")
+            .data(commitData.map(function (d) { return d["crime"]; }))
+            .enter().append("g")
+            .attr("class", "legend-item")
+            .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+        legendItems.append("rect")
+            .attr("x", 0)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", function (d) { return color(d); });
+
+        legendItems.append("text")
+            .attr("x", 25)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "start")
+            .text(function (d) { return d; });
+
+        legendItems
+            .on("mouseover", handleLegendMouseover)
+            .on("mouseout", handleLegendMouseout);
+        
     });
 }
+
 
 
 function getFileNameForCrimeType(crimeType) {

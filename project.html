@@ -212,7 +212,6 @@ g.selectAll(".gridline")
 function handleLegendClick(d) {
     // Assuming you have CSV files in the same format as the original data
     var fileName = getFileNameForCrimeType(d);
- alert("Selected crime type: " + d + "\nCSV file name: " + fileName);
     // Remove all elements from the SVG
     d3.select("svg").selectAll("*").remove();
 
@@ -332,6 +331,16 @@ function getFileNameForCrimeType(crimeType) {
 
         drawLineChart();
     });
+    
+
 </script>
+<h1>What is this?</h1>
+<p>Here we have an interactive plot that represents the proportions of each crime category associated with those currently incarcerated in FDOC across multiple commitments. For instance, looking at the line for drug offenses, you'll see that 14.8 percent of individuals serving their first sentence are incarcerated for drug-related crimes. This percentage increases to 21.9% for those on their second sentence, 26.5% for the third, and so on.
+
+Hovering over the legend items allows you to isolate a line for a specific crime category. Clicking on a legend item will redraw the graph to display the top-10 crimes within each category. For example, if you click on the 'drug crimes' category in the legend, you will see that cocaine possession proportions increase across multiple incarcerations.
+
+I still need to add more features and animations, but it's functional! Please, share! I'm looking for feedback and reviews!
+
+Reload the page to reset the plot I’m so excited to share it I’ll write the polished code later!</p>
 </body>
 </html>

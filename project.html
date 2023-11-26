@@ -212,7 +212,7 @@ g.selectAll(".gridline")
 function handleLegendClick(d) {
     // Assuming you have CSV files in the same format as the original data
     var fileName = getFileNameForCrimeType(d);
-
+ alert("Selected crime type: " + d + "\nCSV file name: " + fileName);
     // Remove all elements from the SVG
     d3.select("svg").selectAll("*").remove();
 
@@ -327,7 +327,7 @@ function handleLegendClick(d) {
 
 function getFileNameForCrimeType(crimeType) {
     // Replace spaces and slashes with underscores, and add '.csv' to create the filename
-    return crimeType.replace(/\s+/g, '_').replace(/\//g, '_') + '.csv';
+    return crimeType.replace(/\s+/g, '_').replace(/\//g, '_').replace(/\,//g,'') + '.csv';
 }
 
         drawLineChart();

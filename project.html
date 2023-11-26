@@ -37,7 +37,7 @@
 <body>
 
 <svg id="main" width="1200" height="600">
-    <text id='label' x='20' y='20'>Title of this very cool plot</text>
+    <text id='label' x='20' y='20'>Very Awesome Plot with Awesomer Title</text>
     <g transform="translate(70,40)"></g>
 </svg>
 
@@ -87,16 +87,18 @@
 
             g = d3.select("svg").select("g");
 
-            // Draw gridlines
-            g.selectAll(".gridline")
-                .data(yScale.ticks(10))
-                .enter().append("line")
-                .attr("class", "gridline")
-                .attr("x1", 0)
-                .attr("x2", CHART_WIDTH)
-                .attr("y1", function(d) { return yScale(d); })
-                .attr("y2", function(d) { return yScale(d); })
-                .style("opacity", 1);
+// Draw gridlines
+g.selectAll(".gridline")
+    .data(yScale.ticks(10))
+    .enter().append("line")
+    .attr("class", "gridline")
+    .attr("x1", 0)
+    .attr("x2", CHART_WIDTH)
+    .attr("y1", function(d) { return yScale(d); })
+    .attr("y2", function(d) { return yScale(d); })
+    .style("stroke", "rgba(0, 0, 0, 0.2)")  // Adjust the color and opacity here
+    .style("stroke-width", 2);  // Adjust the thickness here
+
 
             commitData.forEach(function (crime) {
                 crime.Points = [
@@ -158,8 +160,48 @@
 
             legendItems
                 .on("mouseover", handleLegendMouseover)
-                .on("mouseout", handleLegendMouseout);
+                .on("mouseout", handleLegendMouseout)
+                .on("click", handleLegendClick);
         }
+
+function drawSubPlot(crimeType, subData) {
+    var CHART_WIDTH = 750;
+    var CHART_HEIGHT = 500;
+    var g;
+
+    d3.select("svg").selectAll("*").remove();
+
+    // Recreate the necessary SVG elements
+    g = d3.select("svg").append("g").attr("transform", "translate(70,40)");
+
+    // Redraw the gridlines
+    g.selectAll(".gridline")
+        .data(yScale.ticks(10))
+        .enter().append("line")
+        .attr("class", "gridline")
+        .attr("x1", 0)
+        .attr("x2", CHART_WIDTH)
+        .attr("y1", function(d) { return yScale(d); })
+        .attr("y2", function(d) { return yScale(d); })
+        .style("stroke", "rgba(0, 0, 0, 0.2)")
+        .style("stroke-width", 2);
+
+    subData.forEach(function (crime) {
+        if (crime["Crime Category"] === crimeType) {
+            var crimeGroup = g.append("g")
+                .attr("class", "crime-group")
+                .style("opacity", 1);
+
+            crimeGroup.append("path")
+                .data([crime])
+                .attr("class", "line")
+                .attr("d", line(crime.Points))
+                .style("stroke", color(crime["Crime Category"]))
+                .style("opacity", 0.75);
+        }
+    });
+}
+
 
         function handleLegendMouseover(d) {
             // Select all gridlines, and smoothly adjust the opacity
@@ -204,6 +246,37 @@
                 .duration(400)  // Duration of the transition in milliseconds
                 .style("opacity", 1);
         }
+
+function handleLegendClick(d) {
+    var fileName = getFileNameForCrimeType(d);
+    alert("Selected crime type: " + d + "\nCSV file name: " + fileName);
+
+    // Remove all elements from the SVG
+    d3.select("svg").selectAll("*").remove();
+
+    // Recreate the necessary SVG elements
+    var g = d3.select("svg").append("g").attr("transform", "translate(70,40)");
+
+    // Load data from CSV and redraw the plot
+    d3.csv(fileName, function(error, data) {
+        if (error) throw error;
+
+        // ... (rest of your code for drawing the plot)
+
+        // Use the 'g' element for appending elements
+        var crimeGroup = g.append("g")
+            .attr("class", "crime-group")
+            .style("opacity", 1);
+
+        // ... (rest of your code for drawing the lines)
+    });
+}
+
+
+function getFileNameForCrimeType(crimeType) {
+    // Replace spaces and slashes with underscores, and add '.csv' to create the filename
+    return crimeType.replace(/\s+/g, '_').replace(/\//g, '_') + '.csv';
+}
 
         drawLineChart();
     });

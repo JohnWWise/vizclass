@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
 <style type="text/css">
@@ -63,43 +64,102 @@
   font-weight: bold;
 }
 </style>
-<title>Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Project</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .visualization {
+            margin-top: 40px;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #777;
+        }
+    </style>
 </head>
 
 <body>
 
+    <header>
+        <h1>D3 Data Visualization Project</h1>
+    </header>
 
-This project was a great introduction for me to D3 and creating data visualizations, but I did not invest the resources necessary to get as much out of it as I should have.
+    <section class="section">
+        <h2></h2>
+        <p>This project was a great introduction for me to D3 and creating data visualizations, but I did not invest the time and attention necessary to get as much out of it as I should have.</p>
 
-Nevertheless, I have learned quite a lot, and have produced the preceding D3 created visual as evidence of that.
+<p>Nevertheless, I have learned quite a lot, and have produced the preceding D3 created visual as evidence of that.</p>
+    </section>
 
-Over the last few months, I have been working with publicly available data from the Florida Department of Corrections and posting my work to a public repository. The visual submitted for this project evolved from an investigation I was already conducting on returns to incarceration within the Florida Department of Corrections.
+    <section class="section">
+        <h2>Data Exploration/Design</h2>
+        <p>Over the last few months, I have been working with <a href="https://fdc.myflorida.com/pub/obis_request.html">publicly available data from the Florida Department of Corrections</a> and posting my work to a <a href= "https://johnwwise.github.io/public_repository/work/2023-10-04-returns/">public repository</a>. The visual submitted for this project evolved from an investigation I was already conducting on returns to incarceration within the Florida Department of Corrections.</p>
 
-Previously, I had explored the question of, of those incarcerated for their first, second, third, etc, offense, how does the proportion of crime category change? For example, when looking at those who are in for burglary, does that proportion of the population grow or shrink among those in prison their first, second, third, times? 
+<p>Previously, I had explored the question of, of those incarcerated for their first, second, third, etc, offense, how does the proportion of crime category change? We might then ask, for example, when looking at those who are in for violent offenses, does that proportion of the population grow or shrink among those in prison their first, second, third, times?</p>
 
-This initial investigation was conducted in R within RStudio, and required a substantial amount of data manipulation, but the design of the grapic really closely followed by process of investigation with the raw data, so I will focus on describing my exploration.
+<p>This initial investigation was conducted in R within RStudio, and required a substantial amount of data manipulation, but the design of the graphic closely followed the process of investigation with the raw data, so I will focus on describing my exploration.</p>
 
-To begin, I just looked at the ordered proportions of crime categories for everyone incarcerated — this showed that the bulk were Burglary, Theft, Property Crimes, at 29% and Violent Crimes at 23%. There was then a steep drop with the third largest proportion coming in at Drug Offenses at 15%. 
+<p>To begin, I just looked at the ordered proportions of crime categories for everyone incarcerated — this showed that the bulk were Burglary, Theft, Property Crimes, at 29% and Violent Crimes at 23%. There was then a steep drop with the third largest proportion coming in at Drug Offenses at 15%.</p> 
 
-My next step involved isolating each group based on the number of times they were incarcerated. First, I specifically focused on those incarcerated for the first time to examine their proportions. Immediately, I noticed a significant difference from the total population proportions: the proportion of individuals associated with Burglary, Theft, and Property Crimes dropped to 16.5%, while those associated with violent crimes rose to 37.5%. 
+<img src="everyone.png" width="100%"/>
 
-Although it didn’t make sense to juxtapose in a table the proportions for the general population and the subpopulation of those incarcerated for a specific number of times, it made great sense to tabulate the proportions of those subpopulations themselves.
+<p>My next step involved isolating each group based on the number of times they were incarcerated. First, I specifically focused on those incarcerated for the first time to examine their proportions. Immediately, I noticed a significant difference from the total population proportions: the proportion of individuals associated with Burglary, Theft, and Property Crimes dropped to 16.5%, while those associated with violent crimes rose to 37.5%.</p>
 
-I organized the data logically, with categories as rows and iterative filtering for each subgroup as columns — First Commitment, Second Commitment, and so on. These columns were arranged from left to right, with the number of commitments increasing in each column.
+<p>Although it didn’t make sense to juxtapose in a table the proportions for the general population and the subpopulation of those incarcerated for a specific number of times, it made great sense to tabulate the proportions of those subpopulations themselves.</p>
 
-From here I recognized that I had a visualization already ready to go. All I needed to do was encode the proportion values as spatial distances, the categorical differences as colors and line types, and connect encoded points with lines to convey progression throughout increasing number of incarcerations. 
+<p>I organized the data logically, with categories as rows and iterative filtering for each subgroup as columns — First Commitment, Second Commitment, and so on. These columns were arranged from left to right, with the number of commitments increasing in each column.</p>
+<img src="bycommit.png" width="100%"/>
+<p>From here I recognized that I had a visualization already ready to go. All I needed to do was encode the proportion values as spatial distances, the categorical differences as colors and line types, and connect encoded points with lines to convey progression throughout increasing number of incarcerations.</p>
+<img src="cat_by_commit.png" width="100%"/>
+<p>The static graphic had several disadvantages and limitations. The interactive visual aimed to address the two most significant issues. Firstly, the number of crime categories was larger than ideal for a clear graphic, resulting in some clutter. Secondly, it relied on aggregated information from categories, losing information on individual crimes.</p>
+    </section>
 
-The static graphic had several disadvantages and limitations. The interactive visual aimed to address the two most significant issues. Firstly, the number of crime categories was larger than ideal for a clear graphic, resulting in some clutter. Secondly, it relied on aggregated information from categories, losing information on individual crimes.
-
-To address the first concern, I designed the D3 graphic to include a function which makes all but the relevant associated line fade away when one hovers the mouse pointer over a legend item.
+    <section class="visualization">
+        <h2>Interactive Data Visualization</h2>
+        <p>To address the first concern, I designed the D3 graphic to include a function which makes all but the relevant associated line fade away when one hovers the mouse pointer over a legend item.
 
 To disaggregate the categories back to individual crime types, one can click the associated legend item, displaying the same graphic filtered for a single crime category.
 
-This approach enables a detailed examination of the types of crimes committed by those currently incarcerated. For instance, if one were exploring factors contributing to recidivism, the categories of Burglary, Theft, Property Crimes, and Drug Offenses are noticeably increasing, while others are declining or remain stable. Further examination of a specific category, like Drug Offenses, reveals that cocaine and methamphetamine are the primary substances of concern.
+<p>This approach enables a detailed examination of the types of crimes committed by those currently incarcerated. </p> <p>For instance, if one were exploring factors contributing to recidivism, the categories of Burglary, Theft, Property Crimes, and Drug Offenses are noticeably increasing, while others are declining or remain stable.</p>
+<img src="drugs.png" width="100%"/>
+<p>Further examination of a specific category, like Drug Offenses, reveals that cocaine and methamphetamine are the primary substances of concern.
+</p>
+<img src="filtered_drugs.png" width="100%"/>
+    </section>
 
-Overall, this project was a lesson in humility. Despite multiple attempts, I was unable to implement basic improvements on the graphic. For instance, I wasn't able to encode line types for various categories consistently. I also struggled to create a function that would restore the graph to its original form when a legend item was clicked. Additionally, I failed to isolate lines representing individual crimes in the same way I did for categories. Lastly, I couldn't include point values for each proportion on the plot itself, which would have significantly clarified the proportions. D3 is difficult to work with.
-
-
+    <section class="section">
+        <h2>Lessons Learned</h2>
+        <p>Overall, this project was a lesson in humility.</p>
+        <p>Despite multiple attempts, I was unable to implement basic improvements on the graphic. For instance, I wasn't able to encode line types for various categories consistently. I also struggled to create a function that would restore the graph to its original form when a legend item was clicked. Additionally, I failed to isolate lines representing individual crimes in the same way I did for categories. Lastly, I couldn't include point values for each proportion on the plot itself, which would have significantly clarified the proportions. D3 is difficult to work with.</p>
+    </section>
 
 </body>
+
 </html>

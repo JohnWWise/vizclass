@@ -66,16 +66,16 @@
 
 <p>To begin, I just looked at the ordered proportions of crime categories for everyone incarcerated — this showed that the bulk were Burglary, Theft, Property Crimes, at 29% and Violent Crimes at 23%. There was then a steep drop with the third largest proportion coming in at Drug Offenses at 15%.</p> 
 
-<img src="everyone.png" width="100%"/>
+<img src="drugs.png" width="100%"/>
 
 <p>My next step involved isolating each group based on the number of times they were incarcerated. First, I specifically focused on those incarcerated for the first time to examine their proportions. Immediately, I noticed a significant difference from the total population proportions: the proportion of individuals associated with Burglary, Theft, and Property Crimes dropped to 16.5%, while those associated with violent crimes rose to 37.5%.</p>
 
 <p>Although it didn’t make sense to juxtapose in a table the proportions for the general population and the subpopulation of those incarcerated for a specific number of times, it made great sense to tabulate the proportions of those subpopulations themselves.</p>
 
 <p>I organized the data logically, with categories as rows and iterative filtering for each subgroup as columns — First Commitment, Second Commitment, and so on. These columns were arranged from left to right, with the number of commitments increasing in each column.</p>
-<img src="bycommit.png" width="100%"/>
+
 <p>From here I recognized that I had a visualization already ready to go. All I needed to do was encode the proportion values as spatial distances, the categorical differences as colors and line types, and connect encoded points with lines to convey progression throughout increasing number of incarcerations.</p>
-<img src="cat_by_commit.png" width="100%"/>
+
 <p>The static graphic had several disadvantages and limitations. The interactive visual aimed to address the two most significant issues. Firstly, the number of crime categories was larger than ideal for a clear graphic, resulting in some clutter. Secondly, it relied on aggregated information from categories, losing information on individual crimes.</p>
     </section>
 
@@ -85,11 +85,8 @@
 
 To disaggregate the categories back to individual crime types, one can click the associated legend item, displaying the same graphic filtered for a single crime category.
 
-<p>This approach enables a detailed examination of the types of crimes committed by those currently incarcerated. </p> <p>For instance, if one were exploring factors contributing to recidivism, the categories of Burglary, Theft, Property Crimes, and Drug Offenses are noticeably increasing, while others are declining or remain stable.</p>
-<img src="drugs.png" width="100%"/>
-<p>Further examination of a specific category, like Drug Offenses, reveals that cocaine and methamphetamine are the primary substances of concern.
+This approach enables a detailed examination of the types of crimes committed by those currently incarcerated. For instance, if one were exploring factors contributing to recidivism, the categories of Burglary, Theft, Property Crimes, and Drug Offenses are noticeably increasing, while others are declining or remain stable. Further examination of a specific category, like Drug Offenses, reveals that cocaine and methamphetamine are the primary substances of concern.
 </p>
-<img src="filtered_drugs.png" width="100%"/>
     </section>
 
     <section class="section">

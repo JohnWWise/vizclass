@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Crime Categories - Commit Duration</title>
+    <title>Proportions of Crime Categories Across Number of Commitments</title>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <style>
         .text {
@@ -37,7 +37,7 @@
 <body>
 
 <svg id="main" width="1200" height="600">
-    <text id='label' x='20' y='20'>Very Awesome Plot with Awesomer Title</text>
+    <text id='label' x='20' y='20'>Proportions of Crime Categories Across Number of Commitments</text>
     <g transform="translate(70,40)"></g>
 </svg>
 
@@ -334,14 +334,8 @@ function getFileNameForCrimeType(crimeType) {
     
 
 </script>
-<h1>What is this?</h1>
-<p>This interactive plot represents the proportions of each crime category associated with those currently incarcerated in FDOC across multiple commitments. For instance, looking at the line for drug offenses, you'll see that 14.8 percent of individuals serving their first sentence are incarcerated for drug-related crimes. This percentage increases to 21.9% for those on their second sentence, 26.5% for the third, and so on.
+<p><a href="https://johnwwise.github.io/public_repository/work/2023-10-04-returns">Graphic Documentation</a>
 
-Hovering over the legend items allows you to isolate a line for a specific crime category. Clicking on a legend item redraws the graph to display the top-10 crimes within each category. However, it's important to note that these proportions are relative to the original category's proportion, not the total population. For example, if you click on the 'drug crimes' category which constitutes around 15% of the total, you will see individual drug-related crimes, some of which may have proportions greater than 15% - these are relative to the 'drug crimes' category, not the total population.
-
-Moreover, some proportions may add up to more than 100% because some crimes are associated with multiple categories or crimes.
-
-While more features and animations are yet to be added, this functional version is ready to be shared! Please feel free to provide your feedback and reviews. Don't forget to reload the page to reset the plot. Stay tuned for the polished code! Look over the rough work if you can please! https://johnwwise.github.io/public_repository/work/2023-10-04-returns/ </p>
 
 </body>
 </html>

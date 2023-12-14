@@ -69,7 +69,37 @@
 <body>
 
 
-This interactive plot represents the proportions of each crime category associated with those currently incarcerated in FDOC across multiple commitments. For instance, looking at the line for drug offenses, you'll see that 14.8 percent of individuals serving their first sentence are incarcerated for drug-related crimes. This percentage increases to 21.9% for those on their second sentence, 26.5% for the third, and so on. Hovering over the legend items allows you to isolate a line for a specific crime category. Clicking on a legend item redraws the graph to display the top-10 crimes within each category. However, it's important to note that these proportions are relative to the original category's proportion, not the total population. For example, if you click on the 'drug crimes' category which constitutes around 15% of the total, you will see individual drug-related crimes, some of which may have proportions greater than 15% - these are relative to the 'drug crimes' category, not the total population. Moreover, some proportions may add up to more than 100% because some crimes are associated with multiple categories or crimes. While more features and animations are yet to be added, this functional version is ready to be shared! Please feel free to provide your feedback and reviews. Don't forget to reload the page to reset the plot. Stay tuned for the polished code! Look over the rough work if you can please! https://johnwwise.github.io/public_repository/work/2023-10-04-returns/
+This project was a great introduction for me to D3 and creating data visualizations, but I did not invest the resources necessary to get as much out of it as I should have.
+
+Nevertheless, I have learned quite a lot, and have produced the preceding D3 created visual as evidence of that.
+
+Over the last few months, I have been working with publicly available data from the Florida Department of Corrections and posting my work to a public repository. The visual submitted for this project evolved from an investigation I was already conducting on returns to incarceration within the Florida Department of Corrections.
+
+Previously, I had explored the question of, of those incarcerated for their first, second, third, etc, offense, how does the proportion of crime category change? For example, when looking at those who are in for burglary, does that proportion of the population grow or shrink among those in prison their first, second, third, times? 
+
+This initial investigation was conducted in R within RStudio, and required a substantial amount of data manipulation, but the design of the grapic really closely followed by process of investigation with the raw data, so I will focus on describing my exploration.
+
+To begin, I just looked at the ordered proportions of crime categories for everyone incarcerated — this showed that the bulk were Burglary, Theft, Property Crimes, at 29% and Violent Crimes at 23%. There was then a steep drop with the third largest proportion coming in at Drug Offenses at 15%. 
+
+My next step involved isolating each group based on the number of times they were incarcerated. First, I specifically focused on those incarcerated for the first time to examine their proportions. Immediately, I noticed a significant difference from the total population proportions: the proportion of individuals associated with Burglary, Theft, and Property Crimes dropped to 16.5%, while those associated with violent crimes rose to 37.5%. 
+
+Although it didn’t make sense to juxtapose in a table the proportions for the general population and the subpopulation of those incarcerated for a specific number of times, it made great sense to tabulate the proportions of those subpopulations themselves.
+
+I organized the data logically, with categories as rows and iterative filtering for each subgroup as columns — First Commitment, Second Commitment, and so on. These columns were arranged from left to right, with the number of commitments increasing in each column.
+
+From here I recognized that I had a visualization already ready to go. All I needed to do was encode the proportion values as spatial distances, the categorical differences as colors and line types, and connect encoded points with lines to convey progression throughout increasing number of incarcerations. 
+
+The static graphic had several disadvantages and limitations. The interactive visual aimed to address the two most significant issues. Firstly, the number of crime categories was larger than ideal for a clear graphic, resulting in some clutter. Secondly, it relied on aggregated information from categories, losing information on individual crimes.
+
+To address the first concern, I designed the D3 graphic to include a function which makes all but the relevant associated line fade away when one hovers the mouse pointer over a legend item.
+
+To disaggregate the categories back to individual crime types, one can click the associated legend item, displaying the same graphic filtered for a single crime category.
+
+This approach enables a detailed examination of the types of crimes committed by those currently incarcerated. For instance, if one were exploring factors contributing to recidivism, the categories of Burglary, Theft, Property Crimes, and Drug Offenses are noticeably increasing, while others are declining or remain stable. Further examination of a specific category, like Drug Offenses, reveals that cocaine and methamphetamine are the primary substances of concern.
+
+Overall, this project was a lesson in humility. Despite multiple attempts, I was unable to implement basic improvements on the graphic. For instance, I wasn't able to encode line types for various categories consistently. I also struggled to create a function that would restore the graph to its original form when a legend item was clicked. Additionally, I failed to isolate lines representing individual crimes in the same way I did for categories. Lastly, I couldn't include point values for each proportion on the plot itself, which would have significantly clarified the proportions. D3 is difficult to work with.
+
+
 
 </body>
 </html>
